@@ -1,0 +1,26 @@
+#! /bin/bash
+
+source "../config/config.sh"
+
+# Función pricipal
+download_files() {
+	local url_file="$0"
+	local date_time=$(date +"%Y-%m-%d %H:%M:%S")
+	local indicator=( "[INFO]" "[ERROR]" "[WARNING]" )
+	local status=( "Completed" "Failed" "Declined" )
+
+	while IFS= read -r url; do
+		if [[ $url == *".mp4"* ]]; then
+			wget -P "$VIDEO_DIR" "$url"
+		elif [[ $url == *".jpg"* ]] || [[ $url == *".png"* ]]; then
+			wget -P "$PHOTO_DIR" "$url"
+		else 
+			wget -P "$FILE_DIR" "$url"
+		fi
+	done < "$url_file"
+
+	echo "[$date_time] ${indicator[0]} ${status[0]}" | tee -a ../logs/download.log
+
+}
+
+download_files "../config/urls.txt"
